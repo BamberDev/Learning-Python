@@ -126,7 +126,7 @@ while True:
     elif command == "zarzadzaj":
         school.manage_users()
     elif command == "koniec":
-        print("Zakoczono program.")
+        print("Zakonczono program.")
         break
     else:
         print("Nieznana komenda!")
