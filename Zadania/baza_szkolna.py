@@ -6,7 +6,7 @@ class School:
         self.teachers = []
         self.homeroom_teachers = []
 
-    def create_user(self):
+    def create_new_user(self):
         while True:
             print("\nWybierz opcje: uczen, nauczyciel, wychowawca, koniec")
             option = input("Co chcesz zrobic?: ").lower()
@@ -47,7 +47,7 @@ class School:
         self.homeroom_teachers.append({"name": name, "class": class_name})
         print(f"Wychowawca {name}, klasa {class_name}.")
 
-    def manage_users(self):
+    def manage_school_data(self):
         while True:
             print("\nWybierz opcje: klasa, uczen, nauczyciel, wychowawca, koniec")
             option = input("Co chcesz zrobic?: ").lower()
@@ -84,12 +84,19 @@ class School:
 
     def show_student_schedule(self):
         name = input("Podaj imie i nazwisko ucznia: ")
-        student_classes = [t for t in self.teachers if any(c for c in t['classes'] if c == name)]
+        student = next((s for s in self.students if s['name'] == name), None)
+        
+        if not student:
+            print(f"Brak ucznia o imieniu {name}.")
+            return
+        
+        class_name = student['class']
+        student_classes = [t for t in self.teachers if class_name in t['classes']]
 
         if student_classes:
-            print(f"Lekcje ucznia {name}:")
+            print(f"\nLekcje ucznia {student['name']} (klasa {class_name}):")
             for teacher in student_classes:
-                print(f" - {teacher['subject']}, nauczyciel: {teacher['name']}")
+                print(f" - {teacher['subject']} z nauczycielem: {teacher['name']}")
         else:
             print(f"Brak lekcji dla ucznia {name}.")
 
@@ -98,7 +105,7 @@ class School:
         teacher = next((t for t in self.teachers if t['name'] == name), None)
 
         if teacher:
-            print(f"Nauczyciel {name} prowadzi klasy: {', '.join(teacher['classes'])}")
+            print(f"Nauczyciel {teacher['name']} prowadzi klasy: {', '.join(teacher['classes'])}")
         else:
             print(f"Brak nauczyciela o imieniu {name}.")
 
@@ -108,12 +115,11 @@ class School:
 
         if homeroom_teacher:
             students_in_class = [student['name'] for student in self.students if student['class'] == homeroom_teacher['class']]
-            print(f"Wychowawca {name}, klasa {homeroom_teacher['class']}, uczniowie:")
+            print(f"Wychowawca {homeroom_teacher['name']}, klasa {homeroom_teacher['class']}, uczniowie:")
             for student in students_in_class:
                 print(f" - {student}")
         else:
             print(f"Brak wychowawcy o imieniu {name}.")
-
 
 school = School()
 
@@ -122,9 +128,9 @@ while True:
     command = input("Podaj komende: ").lower()
 
     if command == "utworz":
-        school.create_user()
+        school.create_new_user()
     elif command == "zarzadzaj":
-        school.manage_users()
+        school.manage_school_data()
     elif command == "koniec":
         print("Zakonczono program.")
         break
