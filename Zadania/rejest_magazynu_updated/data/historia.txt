@@ -11,3 +11,8 @@ Wprowadzono: -500 | Aktualne saldo: 10400
 Zakupiono 10 sztuk Spodenki. Aktualne saldo: 9950
 Sprzedano 5 sztuk Pilka. Aktualne saldo: 10200
 Dodano: 2024-10-01 04:20:16.320263
+Wprowadzono: 500 | Aktualne saldo: 10700
+Dodano: 2024-10-04 00:49:01.107961
+Wprowadzono: 500 | Aktualne saldo: 11200
+Wprowadzono: 500 | Aktualne saldo: 11200
+Zakupiono 5 sztuk Rower. Aktualne saldo: 10600

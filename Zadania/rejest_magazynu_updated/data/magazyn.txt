@@ -1,4 +1,4 @@
-Rower,{'cena': 120, 'ilosc': 10}
+Rower,{'cena': 120, 'ilosc': 15}
 Pilka,{'cena': 45, 'ilosc': 10}
 Buty sportowe,{'cena': 150, 'ilosc': 10}
 Rekawice,{'cena': 65, 'ilosc': 15}

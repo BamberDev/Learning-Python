@@ -1,6 +1,5 @@
 # funkcje pomocnicze
 import ast
-import datetime as dt
 
 data_konto = "data/konto.txt"
 data_magazyn = "data/magazyn.txt"
@@ -50,9 +49,7 @@ def wyswietl_historie(historia):
     return historia
 
 def zapisz_historie(historia):
-    if historia:
-        historia.append(f"Dodano: {str(dt.datetime.now())}")
-        with open(data_historia, "a") as file:
-            for line in historia:
-                file.write(f"{line}\n")
-        print("Historia zostala zapisana")
+    with open(data_historia, "a") as file:
+        for line in historia:
+            file.write(f"{line}\n")
+    print("Historia zostala zapisana")

@@ -25,6 +25,7 @@ while True:
         log_action = (f"Wprowadzono: {kwota} | Aktualne saldo: {konto}")
         print(log_action)
         historia.append(log_action)
+        zapisz_historie(historia)
         
     elif komenda == "sprzedaz":
         produkt = input("Podaj nazwe produktu: ")
@@ -53,6 +54,7 @@ while True:
         log_action = (f"Sprzedano {liczba_sztuk} sztuk {produkt}. Aktualne saldo: {konto}")
         print(log_action)
         historia.append(log_action)
+        zapisz_historie(historia)
 
     elif komenda == "zakup":
         produkt = input("Podaj nazwe produktu: ")
@@ -80,6 +82,7 @@ while True:
         log_action = (f"Zakupiono {liczba_sztuk} sztuk {produkt}. Aktualne saldo: {konto}")
         print(log_action)
         historia.append(log_action)
+        zapisz_historie(historia)
 
     elif komenda == "konto":
         print(f"Stan konta: {konto}")
@@ -124,7 +127,6 @@ while True:
                 print(f"{i}: {historia[i]}")
 
     elif komenda == "koniec":
-        zapisz_historie(historia)
         print("Koniec programu.")
         break
 
