@@ -34,7 +34,6 @@ def modify_data(data, changes):
         
         data[row][col] = value
     
-    
 def save_data(file_path, data):
     """
     Writes data to csv file
@@ -62,7 +61,6 @@ def pretty_print(data):
         for i, cell in enumerate(row):
             text += cell.ljust(max_lengths[i]) + "\t"
         print(text)
-
 
 def main():
     if len(sys.argv) < 4:
