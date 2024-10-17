@@ -9,60 +9,76 @@ LONGITUDE = 19.02
 
 SAVED_WEATHER_DATA = 'weather_data.json'
 
-def get_weather_data(date):
-    url = f"https://api.open-meteo.com/v1/forecast?latitude={LATITUDE}&longitude={LONGITUDE}&hourly=rain&daily=rain_sum&timezone=Europe%2FLondon&start_date={date}&end_date={date}"
-    
-    try:
-        response = requests.get(url)
-        if response.status_code == 200:
-            data = response.json()
-            rain_sum = data.get('daily', {}).get('rain_sum', [])[0]
-            return rain_sum
+class WeatherForecast:
+    def __init__(self, filename=SAVED_WEATHER_DATA):
+        self.filename = filename
+        self._load_data()
+
+    def _load_data(self):
+        if os.path.exists(self.filename):
+            with open(self.filename, 'r') as file:
+                self.weather_data = json.load(file)
         else:
-            print(f"Error: Cos poszlo nie tak :(\nStatus code: {response.status_code}")
-            return None
-    except requests.RequestException as error:
-        print(f"Error: {error}")
+            self.weather_data = {}
+
+    def _save_data(self):
+        with open(self.filename, 'w') as file:
+            json.dump(self.weather_data, file)
+
+    def get_weather_data(self, date):
+        url = f"https://api.open-meteo.com/v1/forecast?latitude={LATITUDE}&longitude={LONGITUDE}&hourly=rain&daily=rain_sum&timezone=Europe%2FLondon&start_date={date}&end_date={date}"
+        try:
+            response = requests.get(url)
+            if response.status_code == 200:
+                data = response.json()
+                rain_sum = data.get('daily', {}).get('rain_sum', [])[0]
+                return rain_sum
+            else:
+                print(f"Error: Cos poszlo nie tak :(\nStatus code: {response.status_code}")
+                return None
+        except requests.RequestException as error:
+            print(f"Error: {error}")
         return None
 
-def save_weather_data(date, rain_status):
-    if os.path.exists(SAVED_WEATHER_DATA):
-        with open(SAVED_WEATHER_DATA, 'r') as file:
-            weather_data = json.load(file)
-    else:
-        weather_data = {}
+    def __setitem__(self, date, rain_status):
+        self.weather_data[date] = rain_status
+        self._save_data()
 
-    weather_data[date] = rain_status
+    def __getitem__(self, date):
+        if date not in self.weather_data:
+            rain_sum = self.get_weather_data(date)
 
-    with open(SAVED_WEATHER_DATA, 'w') as file:
-        json.dump(weather_data, file)
+            if rain_sum is None or rain_sum < 0:
+                rain_status = "Nie wiem"
+            elif rain_sum > 0:
+                rain_status = "Bedzie padac"
+            else:
+                rain_status = "Nie bedzie padac"
+            self[date] = rain_status
+            
+        return self.weather_data[date]
 
-def load_weather_data():
-    if os.path.exists(SAVED_WEATHER_DATA):
-        with open(SAVED_WEATHER_DATA, 'r') as file:
-            return json.load(file)
-    return {}
+    def __iter__(self):
+        return iter(self.weather_data)
 
-def check_weather(date):
-    weather_data = load_weather_data()
-
-    if date in weather_data:
-        return weather_data[date]
-    
-    rain_sum = get_weather_data(date)
-
-    if rain_sum is None or rain_sum < 0:
-        rain_status = "Nie wiem"
-    elif rain_sum > 0:
-        rain_status = "Bedzie padac"
-    else:
-        rain_status = "Nie bedzie padac"
-    
-    save_weather_data(date, rain_status)
-    return rain_status
+    def items(self):
+        return self.weather_data.items()
 
 def main():
-    print("Program sprawdzajacy pogode w Katowicach.")
+    print("\nProgram sprawdzajacy pogode w Katowicach.")
+    weather_forecast = WeatherForecast()
+
+    print("\nZapisane daty pogodowe:")
+    for date in weather_forecast:
+        print(f"Data: {date}")
+
+    print("\nZapisane dane pogodowe:")
+    if weather_forecast.items():
+        for date, weather in weather_forecast.items():
+            print(f"Data: {date}, Pogoda: {weather}")
+    else:
+        print("Brak zapisanych danych.\n")
+    print()
     
     while True:
         print("---Wpisz koniec, aby zakonczyc program---\n")
@@ -80,7 +96,7 @@ def main():
                 print("\nBledny format daty. Uzyj formatu YYYY-mm-dd.\n")
                 continue
 
-        weather_status = check_weather(date)
+        weather_status = weather_forecast[date]
         print(f"\nStan pogody w Katowicach na dzien {date}: {weather_status}\n")
 
 if __name__ == "__main__":
