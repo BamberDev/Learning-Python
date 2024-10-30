@@ -133,9 +133,9 @@ def pretty_print(data):
 
 def main():
     if len(sys.argv) < 4:
-        print("Something went wrong!")
+        print("Something went wrong. Expected at least 4 arguments.")
         print(
-            "Example usage: python reader.py data/in.csv data/out.json <change_1> <change_2> ... <change_n>"
+            "Example usage: python reader.py data/in.csv data/out.json <change_1> ... <change_n>"
         )
         sys.exit(1)
 
