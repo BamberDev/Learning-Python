@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Inventory and Accounting</title>
+  </head>
+  <body class="bg-gray-100 text-gray-800">
+    <header class="bg-gray-800 text-white p-4">
+      <h1 class="text-2xl font-bold">Inventory and Accounting</h1>
+    </header>
+
+    <main class="p-8">
+      <section class="mb-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="bg-white p-4 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-2">Inventory Status</h2>
+            <ul id="inventory" class="list-disc ml-4"></ul>
+          </div>
+          <div class="bg-white p-4 rounded-lg shadow">
+            <h2 class="text-xl font-semibold mb-2">Account Balance</h2>
+            <p class="text-2xl font-bold text-green-600" id="account">
+              PLN <span>0</span>
+            </p>
+          </div>
+        </div>
+        <div class="bg-white p-4 rounded-lg shadow mt-4">
+          <h2 class="text-xl font-semibold mb-2">Operation History</h2>
+          <div class="flex justify-center">
+            <a
+              href="historia.html"
+              class="bg-blue-800 text-white p-2 rounded w-full text-center"
+              >View History</a
+            >
+          </div>
+          <div>
+            <h2 class="text-lg font-semibold mb-2">
+              View History in a Specified Range
+            </h2>
+            <form action="historia.html">
+              <input
+                type="number"
+                name="line_from"
+                placeholder="Start Index"
+                class="w-full p-2 mb-4 border rounded"
+                required
+              />
+              <input
+                type="number"
+                name="line_to"
+                placeholder="End Index"
+                class="w-full p-2 mb-4 border rounded"
+                required
+              />
+              <button
+                type="submit"
+                class="w-full bg-blue-800 text-white p-2 rounded"
+              >
+                Show Range
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h2 class="text-lg font-bold mb-4">Product Purchase</h2>
+          <form>
+            <input
+              type="text"
+              placeholder="Product Name"
+              class="w-full p-2 mb-4 border rounded"
+              required
+            />
+            <input
+              type="number"
+              placeholder="Unit Price"
+              class="w-full p-2 mb-4 border rounded"
+              required
+            />
+            <input
+              type="number"
+              placeholder="Quantity"
+              class="w-full p-2 mb-4 border rounded"
+              required
+            />
+            <button
+              type="submit"
+              class="w-full bg-green-500 text-white p-2 rounded"
+            >
+              Confirm Purchase
+            </button>
+          </form>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h2 class="text-lg font-bold mb-4">Product Sale</h2>
+          <form>
+            <input
+              type="text"
+              placeholder="Product Name"
+              class="w-full p-2 mb-4 border rounded"
+              required
+            />
+            <input
+              type="number"
+              placeholder="Unit Price"
+              class="w-full p-2 mb-4 border rounded"
+              required
+            />
+            <input
+              type="number"
+              placeholder="Quantity"
+              class="w-full p-2 mb-4 border rounded"
+              required
+            />
+            <button
+              type="submit"
+              class="w-full bg-blue-500 text-white p-2 rounded"
+            >
+              Confirm Sale
+            </button>
+          </form>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+          <h2 class="text-lg font-bold mb-4">Balance Update</h2>
+          <form>
+            <input
+              type="text"
+              placeholder="Comment"
+              class="w-full p-2 mb-4 border rounded"
+              required
+            />
+            <input
+              type="number"
+              placeholder="Value"
+              class="w-full p-2 mb-4 border rounded"
+              required
+            />
+            <button
+              type="submit"
+              class="w-full bg-yellow-500 text-white p-2 rounded"
+            >
+              Update Balance
+            </button>
+          </form>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
