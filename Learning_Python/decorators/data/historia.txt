@@ -1,0 +1,4 @@
+Wprowadzono: 10000 | Aktualne saldo: 10000
+Zakupiono 10 sztuk Rower. Saldo: 7000
+Zakupiono 15 sztuk Czapka. Saldo: 6250
+Sprzedano 8 sztuk Czapka. Saldo: 6850
