@@ -1,0 +1,2 @@
+Rower,{'cena': 300, 'ilosc': 10}
+Czapka,{'cena': 50, 'ilosc': 7}
