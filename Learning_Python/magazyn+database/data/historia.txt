@@ -1,0 +1,10 @@
+Wprowadzono: 1000 | Aktualne saldo: 1000
+Wprowadzono: 9000 | Aktualne saldo: 10000
+Zakupiono 10 sztuk Rower. Saldo: 9500
+Zakupiono 10 sztuk Spodnie. Saldo: 9350
+Zakupiono 10 sztuk Pilka. Saldo: 9100
+Zakupiono 8 sztuk Czapka. Saldo: 9020
+Zakupiono 10 sztuk Buty. Saldo: 8670
+Sprzedano 7 sztuk Buty. Saldo: 8950
+Sprzedano 4 sztuk Czapka. Saldo: 9010
+Sprzedano 7 sztuk Rower. Saldo: 9465

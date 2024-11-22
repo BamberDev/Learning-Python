@@ -1,0 +1,117 @@
+{% extends "base.html" %}{% block content %}
+<div>
+  <h1 class="underline h1"><a href="/">Strona glowna</a></h1>
+  <div class="flex flex-col justify-center items-center">
+    <div>
+      <h2 class="h2">Stan konta: {{konto}}</h2>
+      <form action="/" method="POST" class="flex flex-col">
+        <input type="hidden" name="operation" value="saldo" />
+        <label for="kwota">Podaj kwote do dodania lub odjecia z konta:</label>
+        <input
+          class="form-input"
+          type="number"
+          name="kwota"
+          id="kwota"
+          placeholder="Kwota"
+          required
+        />
+        <button type="submit" class="form-button">Zatwierdz</button>
+      </form>
+      {% if saldo_error_message %}
+      <p class="text-red-600">{{ saldo_error_message }}</p>
+      {% endif %}
+    </div>
+
+    <div>
+      <h2 class="h2">Stan magazynu:</h2>
+      <ul class="text-left overflow-auto max-h-50">
+        {% for produkt, dane in magazyn.items() %}
+        <li>
+          {{loop.index}}. {{produkt}}: {{dane["ilosc"]}} sztuk, Cena:
+          {{dane["cena"]}}
+        </li>
+        {% else %}
+        <li class="text-center">Magazyn jest pusty.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="flex space-x-5 justify-center items-center">
+    <div>
+      <h2 class="h2">Zakup produkt</h2>
+      <form action="/" class="flex flex-col" method="POST">
+        <input type="hidden" name="operation" value="zakup" />
+        <label for="produkt-zakup">Nazwa produktu:</label>
+        <input
+          class="form-input"
+          type="text"
+          name="produkt-zakup"
+          id="produkt-zakup"
+          placeholder="Nazwa produktu"
+          required
+        />
+        <label for="cena-zakup">Cena zakupu:</label>
+        <input
+          class="form-input"
+          type="number"
+          name="cena-zakup"
+          id="cena-zakup"
+          placeholder="Cena zakupu"
+          required
+        />
+        <label for="liczba-zakup">Liczba sztuk:</label>
+        <input
+          class="form-input"
+          type="number"
+          name="liczba-zakup"
+          id="liczba-zakup"
+          placeholder="Liczba sztuk"
+          required
+        />
+        <button type="submit" class="form-button">Kup</button>
+      </form>
+    </div>
+
+    <div>
+      <h2 class="h2">Sprzedaj produkt</h2>
+      <form action="/" class="flex flex-col" method="POST">
+        <input type="hidden" name="operation" value="sprzedaz" />
+        <label for="produkt-sprzedaz">Nazwa produktu:</label>
+        <input
+          class="form-input"
+          type="text"
+          name="produkt-sprzedaz"
+          id="produkt-sprzedaz"
+          placeholder="Nazwa produktu"
+          required
+        />
+        <label for="cena-sprzedaz">Cena sprzedazy:</label>
+        <input
+          class="form-input"
+          type="number"
+          name="cena-sprzedaz"
+          id="cena-sprzedaz"
+          placeholder="Cena sprzedazy"
+          required
+        />
+        <label for="liczba-sprzedaz">Liczba sztuk:</label>
+        <input
+          class="form-input"
+          type="number"
+          name="liczba-sprzedaz"
+          id="liczba-sprzedaz"
+          placeholder="Liczba sztuk"
+          required
+        />
+        <button type="submit" class="form-button">Sprzedaj</button>
+      </form>
+    </div>
+  </div>
+  {% if error_message %}
+  <p class="text-red-600">{{ error_message }}</p>
+  {% endif %}
+  <h2 class="underline h2"><a href="/historia">Historia operacji</a></h2>
+</div>
+
+{% endblock %}

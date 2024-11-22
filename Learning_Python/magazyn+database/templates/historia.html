@@ -1,0 +1,32 @@
+{% extends "base.html" %}{% block content %}
+<div>
+  <h1 class="h1">Historia operacji:</h1>
+
+  <form action="/historia" method="get" class="mb-4">
+    <label for="start">Podaj indeks poczatkowy:</label>
+    <input type="number" id="start" name="start" placeholder="np. 0" required />
+
+    <label for="end">Podaj indeks koncowy:</label>
+    <input type="number" id="end" name="end" placeholder="np. 10" required />
+
+    <button type="submit" class="form-button">Pokaz zakres</button>
+  </form>
+
+  <h2 class="h2">{{ subtitle }}</h2>
+
+  {% if historia %}
+  <ol class="text-left overflow-auto max-h-60">
+    {% for line in historia %}
+    <li>{{ loop.index }}. {{ line }}</li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="text-red-600">{{ error_message }}</p>
+  {% endif %}
+
+  <div class="flex flex-col gap-2">
+    <a href="/historia" class="underline">Pelna historia operacji</a>
+    <a href="/" class="underline">Powrot na strone glowna</a>
+  </div>
+</div>
+{% endblock %}

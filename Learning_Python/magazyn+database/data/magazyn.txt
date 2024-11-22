@@ -1,0 +1,5 @@
+Rower,{'cena': 50, 'ilosc': 3}
+Spodnie,{'cena': 15, 'ilosc': 10}
+Pilka,{'cena': 25, 'ilosc': 10}
+Czapka,{'cena': 10, 'ilosc': 4}
+Buty,{'cena': 35, 'ilosc': 3}
