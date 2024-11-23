@@ -17,7 +17,7 @@
   {% if historia %}
   <ol class="text-left overflow-auto max-h-60">
     {% for line in historia %}
-    <li>{{ loop.index }}. {{ line }}</li>
+    <li>{{ loop.index }}. {{ line.log_action }}</li>
     {% endfor %}
   </ol>
   {% else %}
