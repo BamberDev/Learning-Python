@@ -1,29 +1,37 @@
-from utils import (
-    wyswietl_konto,
-    wyswietl_magazyn,
-    aktualizuj_magazyn,
-    aktualizuj_konto,
-    wyswietl_historie,
-    zapisz_historie,
-    Manager,
-)
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request
+from flask_sqlalchemy import SQLAlchemy
+from flask_alembic import Alembic
 
 app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///magazyn.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-DATA_KONTO = "data/konto.txt"
-DATA_MAGAZYN = "data/magazyn.txt"
-DATA_HISTORIA = "data/historia.txt"
+db = SQLAlchemy(app)
+alembic = Alembic()
+alembic.init_app(app)
 
-manager = Manager()
-manager.konto = wyswietl_konto(DATA_KONTO)
-manager.magazyn = wyswietl_magazyn(DATA_MAGAZYN)
-manager.historia = wyswietl_historie(DATA_HISTORIA)
+
+class Konto(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    saldo = db.Column(db.Integer, nullable=False, default=0)
+
+
+class Magazyn(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    produkt = db.Column(db.String(80), nullable=False)
+    cena = db.Column(db.Integer, nullable=False)
+    ilosc = db.Column(db.Integer, nullable=False)
+
+
+class Historia(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    log_action = db.Column(db.String(200), nullable=False)
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    global manager
+    konto = Konto.query.first() or Konto(saldo=0)
+    magazyn = Magazyn.query.all()
 
     if request.method == "POST":
         operation = request.form.get("operation")
@@ -31,19 +39,22 @@ def index():
         if operation == "saldo":
             try:
                 kwota = int(request.form["kwota"])
-                manager.konto += kwota
-                aktualizuj_konto(manager.konto, DATA_KONTO)
-                log_action = f"Wprowadzono: {kwota} | Aktualne saldo: {manager.konto}"
-                manager.historia.append(log_action)
-                zapisz_historie(manager.historia, DATA_HISTORIA)
+                konto.saldo += kwota
 
-            except (ValueError, KeyError):
+                db.session.add(konto)
+                db.session.add(
+                    Historia(
+                        log_action=f"Wprowadzono: {kwota} | Aktualne saldo: {konto.saldo}"
+                    )
+                )
+                db.session.commit()
+            except ValueError:
                 return render_template(
                     "index.html",
                     page_title="Zarzadzanie magazynem",
-                    konto=manager.konto,
-                    magazyn=manager.magazyn,
-                    saldo_error_message="Bledna kwota.",
+                    konto=konto,
+                    magazyn=magazyn,
+                    error_message="Bledna kwota.",
                 )
 
         elif operation == "zakup":
@@ -53,35 +64,40 @@ def index():
                 liczba_sztuk = int(request.form["liczba-zakup"])
                 koszt = cena * liczba_sztuk
 
-                if koszt > manager.konto:
+                if koszt > konto.saldo:
                     return render_template(
                         "index.html",
                         page_title="Zarzadzanie magazynem",
-                        konto=manager.konto,
-                        magazyn=manager.magazyn,
-                        error_message=f"Za malo srodkow na koncie! Aktualne saldo: {manager.konto}",
+                        konto=konto,
+                        magazyn=magazyn,
+                        error_message=f"Za malo srodkow na koncie! Aktualne saldo: {konto.saldo}",
                     )
 
-                if produkt in manager.magazyn:
-                    manager.magazyn[produkt]["ilosc"] += liczba_sztuk
+                produkt_w_magazynie = Magazyn.query.filter_by(produkt=produkt).first()
+                if produkt_w_magazynie:
+                    produkt_w_magazynie.ilosc += liczba_sztuk
                 else:
-                    manager.magazyn[produkt] = {"cena": cena, "ilosc": liczba_sztuk}
+                    nowy_produkt = Magazyn(
+                        produkt=produkt, cena=cena, ilosc=liczba_sztuk
+                    )
+                    db.session.add(nowy_produkt)
 
-                manager.konto -= koszt
-                aktualizuj_konto(manager.konto, DATA_KONTO)
-                aktualizuj_magazyn(manager.magazyn, DATA_MAGAZYN)
-                log_action = (
-                    f"Zakupiono {liczba_sztuk} sztuk {produkt}. Saldo: {manager.konto}"
+                konto.saldo -= koszt
+
+                db.session.add(konto)
+                db.session.add(
+                    Historia(
+                        log_action=f"Zakupiono {liczba_sztuk} sztuk {produkt}. Aktualne saldo: {konto.saldo}"
+                    )
                 )
-                print(log_action)
-                manager.historia.append(log_action)
-                zapisz_historie(manager.historia, DATA_HISTORIA)
-            except (ValueError, KeyError):
+                db.session.commit()
+                magazyn = Magazyn.query.all()
+            except ValueError:
                 return render_template(
                     "index.html",
                     page_title="Zarzadzanie magazynem",
-                    konto=manager.konto,
-                    magazyn=manager.magazyn,
+                    konto=konto,
+                    magazyn=magazyn,
                     error_message="Bledne dane zakupu.",
                 )
 
@@ -91,54 +107,44 @@ def index():
                 cena = int(request.form["cena-sprzedaz"])
                 liczba_sztuk = int(request.form["liczba-sprzedaz"])
 
-                if (
-                    produkt not in manager.magazyn
-                    or manager.magazyn[produkt]["ilosc"] < liczba_sztuk
-                ):
+                produkt_w_magazynie = Magazyn.query.filter_by(produkt=produkt).first()
+                if not produkt_w_magazynie or produkt_w_magazynie.ilosc < liczba_sztuk:
                     return render_template(
                         "index.html",
                         page_title="Zarzadzanie magazynem",
-                        konto=manager.konto,
-                        magazyn=manager.magazyn,
+                        konto=konto,
+                        magazyn=magazyn,
                         error_message=f"Brak wystarczajacej ilosci {produkt} w magazynie.",
                     )
 
-                manager.magazyn[produkt]["ilosc"] -= liczba_sztuk
-                if manager.magazyn[produkt]["ilosc"] == 0:
-                    del manager.magazyn[produkt]
+                produkt_w_magazynie.ilosc -= liczba_sztuk
+                if produkt_w_magazynie.ilosc == 0:
+                    db.session.delete(produkt_w_magazynie)
 
-                manager.konto += cena * liczba_sztuk
-                aktualizuj_konto(manager.konto, DATA_KONTO)
-                aktualizuj_magazyn(manager.magazyn, DATA_MAGAZYN)
-                log_action = (
-                    f"Sprzedano {liczba_sztuk} sztuk {produkt}. Saldo: {manager.konto}"
+                konto.saldo += cena * liczba_sztuk
+
+                db.session.add(konto)
+                db.session.add(
+                    Historia(
+                        log_action=f"Sprzedano {liczba_sztuk} sztuk {produkt}. Aktualne saldo: {konto.saldo}"
+                    )
                 )
-                print(log_action)
-                manager.historia.append(log_action)
-                zapisz_historie(manager.historia, DATA_HISTORIA)
-            except (ValueError, KeyError):
+                db.session.commit()
+                magazyn = Magazyn.query.all()
+            except ValueError:
                 return render_template(
                     "index.html",
                     page_title="Zarzadzanie magazynem",
-                    konto=manager.konto,
-                    magazyn=manager.magazyn,
+                    konto=konto,
+                    magazyn=magazyn,
                     error_message="Bledne dane sprzedazy.",
                 )
-
-        else:
-            return render_template(
-                "index.html",
-                page_title="Zarzadzanie magazynem",
-                konto=manager.konto,
-                magazyn=manager.magazyn,
-                error_message="Nieznana operacja!",
-            )
 
     return render_template(
         "index.html",
         page_title="Zarzadzanie magazynem",
-        konto=manager.konto,
-        magazyn=manager.magazyn,
+        konto=konto,
+        magazyn=magazyn,
     )
 
 
@@ -146,14 +152,17 @@ def index():
 def historia():
     start = request.args.get("start")
     end = request.args.get("end")
+    historia = Historia.query.all()
 
     if start is not None and end is not None:
         try:
             start = int(start)
             end = int(end)
 
-            if start < 0 or end > len(manager.historia) or start >= end:
-                error_message = f"Nieprawidlowy zakres! Mozliwy zakres: od 0 do {len(manager.historia)}."
+            if start < 0 or end > len(historia) or start >= end:
+                error_message = (
+                    f"Nieprawidlowy zakres! Mozliwy zakres: od 0 do {len(historia)}."
+                )
                 return render_template(
                     "historia.html",
                     page_title="Historia operacji",
@@ -162,7 +171,7 @@ def historia():
                     error_message=error_message,
                 )
 
-            zakres = manager.historia[start:end]
+            zakres = historia[start:end]
             return render_template(
                 "historia.html",
                 page_title="Historia operacji",
@@ -183,8 +192,9 @@ def historia():
         "historia.html",
         page_title="Historia operacji",
         subtitle="Pelna historia operacji",
-        historia=manager.historia,
+        historia=historia,
     )
 
 
-app.run(debug=True)
+if __name__ == "__main__":
+    app.run(debug=True)
