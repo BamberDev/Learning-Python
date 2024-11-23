@@ -3,7 +3,7 @@
   <h1 class="underline h1"><a href="/">Strona glowna</a></h1>
   <div class="flex flex-col justify-center items-center">
     <div>
-      <h2 class="h2">Stan konta: {{konto}}</h2>
+      <h2 class="h2">Stan konta: {{konto.saldo}}</h2>
       <form action="/" method="POST" class="flex flex-col">
         <input type="hidden" name="operation" value="saldo" />
         <label for="kwota">Podaj kwote do dodania lub odjecia z konta:</label>
@@ -24,11 +24,11 @@
 
     <div>
       <h2 class="h2">Stan magazynu:</h2>
-      <ul class="text-left overflow-auto max-h-50">
-        {% for produkt, dane in magazyn.items() %}
+      <ul class="text-center overflow-auto max-h-50">
+        {% for dane in magazyn %}
         <li>
-          {{loop.index}}. {{produkt}}: {{dane["ilosc"]}} sztuk, Cena:
-          {{dane["cena"]}}
+          {{loop.index}}. {{dane.produkt}}: {{dane.ilosc}} sztuk, Cena:
+          {{dane.cena}}
         </li>
         {% else %}
         <li class="text-center">Magazyn jest pusty.</li>
