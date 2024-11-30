@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Task Manager</title>
+  </head>
+  <body class="bg-gray-300 text-black">
+    <div class="container mx-auto mt-10">
+      <h1 class="text-3xl font-bold text-center mb-6">Task Manager</h1>
+
+      <!-- Add Task Form -->
+      <h2 class="text-xl font-semibold mb-4">Add Task</h2>
+      <form action="/add" method="POST" class="mb-6">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-5">
+          <div>
+            <label for="title" class="block text-sm font-medium text-gray-700">
+              Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              placeholder="Task title"
+              class="border p-2 w-full rounded"
+              required
+            />
+          </div>
+          <div>
+            <label
+              for="description"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Description
+            </label>
+            <input
+              type="text"
+              id="description"
+              name="description"
+              placeholder="Task description"
+              class="border p-2 w-full rounded"
+            />
+          </div>
+          <div>
+            <label
+              for="category"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Category
+            </label>
+            <select
+              id="category"
+              name="category_id"
+              class="border p-2 w-full rounded"
+            >
+              <option value="">Select Category</option>
+              {% for category in categories %}
+              <option value="{{ category.id }}">{{ category.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label
+              for="due_date"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Due Date
+            </label>
+            <input
+              type="date"
+              id="due_date"
+              name="due_date"
+              class="border p-2 w-full rounded"
+              required
+            />
+          </div>
+          <div class="self-end">
+            <button
+              type="submit"
+              class="bg-blue-500 text-white px-4 py-2 rounded"
+            >
+              Add Task
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Add and Manage Categories -->
+      <div class="mb-6 flex flex-col items-start">
+        <h2 class="text-xl font-semibold mb-4">Manage Categories</h2>
+        <form
+          action="/categories"
+          method="POST"
+          class="grid grid-cols-2 gap-4 mb-4"
+        >
+          <div>
+            <label
+              for="category-name"
+              class="block text-sm font-medium text-gray-700"
+            >
+              New Category
+            </label>
+            <input
+              type="text"
+              id="category-name"
+              name="name"
+              placeholder="Category name"
+              class="border p-2 rounded"
+              required
+            />
+          </div>
+          <div class="self-end">
+            <button
+              type="submit"
+              class="bg-green-500 text-white px-4 py-2 rounded"
+            >
+              Add Category
+            </button>
+          </div>
+        </form>
+
+        <!-- Category List for Deletion -->
+        <div>
+          <h3 class="text-lg font-medium mb-2">Existing Categories</h3>
+          <ul>
+            {% for category in categories %}
+            <li class="flex justify-between items-center">
+              <span>{{ category.name }}</span>
+              <form
+                action="/categories/delete/{{ category.id }}"
+                method="POST"
+                class="inline"
+              >
+                <button
+                  type="submit"
+                  class="bg-red-500 text-white px-4 py-2 rounded"
+                >
+                  Delete
+                </button>
+              </form>
+            </li>
+            {% else %}
+            <li>No categories found</li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Task List -->
+      <div class="space-y-4 mb-6">
+        <h1 class="text-2xl font-semibold text-center mb-4">Task List</h1>
+        {% for task in tasks %}
+        <div class="bg-white p-4 rounded shadow relative">
+          <form action="/update/{{ task.id }}" method="POST" class="space-y-4">
+            
+            <!-- Task Title -->
+            <div>
+              <label
+                for="title-{{ task.id }}"
+                class="block text-sm font-medium text-gray-700"
+              >
+                Title
+              </label>
+              <input
+                type="text"
+                id="title-{{ task.id }}"
+                name="title-{{ task.id }}"
+                value="{{ task.title }}"
+                class="border-b w-full text-lg font-bold p-1"
+                required
+              />
+            </div>
+
+            <!-- Task Description -->
+            <div>
+              <label
+                for="description-{{ task.id }}"
+                class="block text-sm font-medium text-gray-700"
+              >
+                Description
+              </label>
+              <textarea
+                id="description-{{ task.id }}"
+                name="description-{{ task.id }}"
+                class="border p-2 w-full rounded"
+                rows="2"
+                required
+              >
+{{ task.description }}</textarea
+              >
+            </div>
+
+            <!-- Task Due Date -->
+            <div>
+              <label
+                for="due_date-{{ task.id }}"
+                class="block text-sm font-medium text-gray-700"
+              >
+                Due Date
+              </label>
+              <input
+                type="date"
+                id="due_date-{{ task.id }}"
+                name="due_date-{{ task.id }}"
+                value="{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}"
+                class="border p-2 rounded"
+                required
+              />
+            </div>
+
+            <!-- Task Category -->
+            <div>
+              <label
+                for="category-{{ task.id }}"
+                class="block text-sm font-medium text-gray-700"
+              >
+                Category
+              </label>
+              <select
+                id="category-{{ task.id }}"
+                name="category_id"
+                class="border p-2 w-full rounded mb-4"
+              >
+                <option value="">None</option>
+                {% for category in categories %}
+                <option
+                  value="{{ category.id }}"
+                  {%
+                  if
+                  task.category
+                  and
+                  task.category.id==category.id
+                  %}
+                  selected
+                  {%
+                  endif
+                  %}
+                >
+                  {{ category.name }}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <!-- Additional Information -->
+            <div>
+              <p class="text-sm text-gray-500">
+                Created at: {{ task.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
+              </p>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex absolute right-[110px] bottom-[16px]">
+              <button
+                type="submit"
+                class="bg-green-500 text-white px-4 py-2 rounded"
+              >
+                Update
+              </button>
+            </div>
+          </form>
+
+          <!-- Delete Button -->
+          <form action="/delete/{{ task.id }}" method="POST" class="mt-2">
+            <button
+              type="submit"
+              class="bg-red-500 text-white px-4 py-2 rounded absolute right-[16px] bottom-[16px]"
+            >
+              Delete
+            </button>
+          </form>
+        </div>
+        {% else %}
+        <p class="text-center text-xl">No tasks found</p>
+        {% endfor %}
+      </div>
+    </div>
+  </body>
+</html>
