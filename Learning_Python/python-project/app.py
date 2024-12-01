@@ -44,10 +44,24 @@ def update_task(task_id):
     if not task:
         return "Task not found", 404
 
-    task.title = request.form.get("title")
-    task.description = request.form.get("description")
-    task.due_date = request.form.get("due_date")
-    category_id = request.form.get("category_id")
+    title_key = f"title-{task_id}"
+    description_key = f"description-{task_id}"
+    due_date_key = f"due_date-{task_id}"
+    category_id_key = f"category_id"
+
+    task.title = request.form.get(title_key)
+    task.description = request.form.get(description_key)
+
+    due_date = request.form.get(due_date_key)
+    if due_date:
+        try:
+            task.due_date = datetime.strptime(due_date, "%Y-%m-%d")
+        except ValueError:
+            return "Invalid date format.", 400
+    else:
+        task.due_date = None
+
+    category_id = request.form.get(category_id_key)
     task.category_id = int(category_id) if category_id else None
 
     db.session.commit()
@@ -82,6 +96,17 @@ def delete_category(category_id):
         db.session.delete(category)
         db.session.commit()
     return redirect(url_for("index"))
+
+
+@app.route("/search")
+def search():
+    query = request.args.get("query", "").strip()
+    if query:
+        tasks = Task.query.filter(Task.title.ilike(f"%{query}%")).all()
+    else:
+        tasks = Task.query.order_by(Task.created_at.asc()).all()
+    categories = Category.query.all()
+    return render_template("index.html", tasks=tasks, categories=categories)
 
 
 if __name__ == "__main__":
