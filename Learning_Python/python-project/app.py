@@ -17,7 +17,9 @@ alembic.init_app(app)
 def index():
     tasks = Task.query.order_by(Task.created_at.asc()).all()
     categories = Category.query.all()
-    return render_template("index.html", tasks=tasks, categories=categories)
+    return render_template(
+        "index.html", tasks=tasks, categories=categories, title="Task Manager"
+    )
 
 
 @app.route("/add", methods=["POST"])
@@ -26,7 +28,15 @@ def add_task():
     description = request.form.get("description", "")
     category_id = request.form.get("category_id", None)
     due_date = request.form.get("due_date", None)
-    due_date = datetime.strptime(due_date, "%Y-%m-%d") if due_date else None
+    if due_date:
+        try:
+            due_date = datetime.strptime(due_date, "%Y-%m-%d")
+        except ValueError:
+            return render_template(
+                "error.html", message="Invalid due date format.", title="Error"
+            )
+    else:
+        due_date = None
 
     new_task = Task(
         title=title,
@@ -44,7 +54,7 @@ def add_task():
 def update_task(task_id):
     task = db.session.get(Task, task_id)
     if not task:
-        return render_template("error.html", message="Task not found.")
+        return render_template("error.html", message="Task not found.", title="Error")
 
     title_key = f"title-{task_id}"
     description_key = f"description-{task_id}"
@@ -58,7 +68,9 @@ def update_task(task_id):
         try:
             task.due_date = datetime.strptime(due_date, "%Y-%m-%d")
         except ValueError:
-            return render_template("error.html", message="Invalid due date format.")
+            return render_template(
+                "error.html", message="Invalid due date format.", title="Error"
+            )
     else:
         task.due_date = None
 
