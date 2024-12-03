@@ -1,248 +1,223 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <script src="https://cdn.tailwindcss.com"></script>
-    <title>Task Manager</title>
-  </head>
-  <body class="bg-gray-300 text-black">
-    <div class="container mx-auto my-10 px-4">
-      <h1 class="text-3xl font-bold text-center mb-6">Task Manager</h1>
+{% extends "base.html" %} {% block content %}
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=True) %} {% if messages
+%}
+<div id="flash-messages" class="sticky top-0 z-50">
+  {% for category, message in messages %}
+  <div
+    class="py-2 px-4 shadow-lg mb-2 text-white flex items-center justify-center {% if category == 'success' %} bg-green-500 {% elif category == 'error' %} bg-red-500 {% elif category == 'info' %} bg-blue-500 {% else %} bg-gray-500 {% endif %}"
+  >
+    <span class="text-lg">{{ message }}</span>
+  </div>
+  {% endfor %}
+</div>
+{% endif %} {% endwith %}
 
-      <!-- Add Task Form -->
-      <div>
-        <h2 class="text-xl font-semibold mb-4">Add Task</h2>
-        <form action="/add" method="POST" class="mb-6">
-          <div class="grid grid-cols-1 gap-4 md:grid-cols-5">
-            <div>
-              <label
-                for="title"
-                class="block text-sm font-medium text-gray-700"
-              >
-                Title
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                placeholder="Task title"
-                class="border p-2 w-full rounded"
-                required
-              />
-            </div>
-            <div>
-              <label
-                for="description"
-                class="block text-sm font-medium text-gray-700"
-              >
-                Description
-              </label>
-              <input
-                type="text"
-                id="description"
-                name="description"
-                placeholder="Task description"
-                class="border p-2 w-full rounded"
-              />
-            </div>
-            <div>
-              <label
-                for="category"
-                class="block text-sm font-medium text-gray-700"
-              >
-                Category
-              </label>
-              <select
-                id="category"
-                name="category_id"
-                class="border p-2 w-full rounded"
-              >
-                <option value="">Select Category</option>
-                {% for category in categories %}
-                <option value="{{ category.id }}">{{ category.name }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div>
-              <label
-                for="due_date"
-                class="block text-sm font-medium text-gray-700"
-              >
-                Due Date
-              </label>
-              <input
-                type="date"
-                id="due_date"
-                name="due_date"
-                class="border p-2 w-full rounded"
-                required
-              />
-            </div>
-            <div class="self-end">
-              <button
-                type="submit"
-                class="bg-green-500 border border-green-500 text-white px-4 py-2 rounded"
-              >
-                Add Task
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
+<!-- Main Content -->
+<main>
+  <div class="container mx-auto my-10 px-4">
+    <h1 class="text-3xl font-bold text-center mb-6">Task Manager</h1>
 
-      <!-- Search Form -->
-      <h2 class="text-xl font-semibold mb-4">Search Tasks</h2>
-      <div class="flex items-center mb-6">
-        <form action="/search" method="GET" class="flex space-x-4">
+    <!-- Add Task Form -->
+    <div>
+      <h2 class="text-2xl font-semibold mb-2">Add Task</h2>
+      <form action="/add" method="POST" class="mb-4">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-5">
           <div>
-            <label for="query" class="block text-sm font-medium text-gray-700"
-              >Search tasks by title:</label
-            >
+            <label for="title" class="form-label"> Title </label>
             <input
               type="text"
-              id="query"
-              name="query"
-              placeholder="Search tasks by title"
-              class="border p-2 rounded"
+              id="title"
+              name="title"
+              placeholder="Task title"
+              class="border p-2 w-full rounded"
+              required
             />
           </div>
-          <button
-            type="submit"
-            class="bg-blue-500 text-white px-4 py-2 rounded"
-          >
-            Search
-          </button>
-        </form>
-        <a href="/" class="bg-gray-500 text-white px-4 py-2 rounded">
-          Show All Tasks
-        </a>
-      </div>
-
-      <!-- Add and Manage Categories -->
-      <div class="flex flex-col items-start">
-        <h2 class="text-xl font-semibold mb-4">Manage Categories</h2>
-        <form
-          action="/categories"
-          method="POST"
-          class="grid grid-cols-2 gap-4 mb-4"
-        >
           <div>
-            <label
-              for="category-name"
-              class="block text-sm font-medium text-gray-700"
-            >
-              New Category
-            </label>
+            <label for="description" class="form-label"> Description </label>
             <input
               type="text"
-              id="category-name"
-              name="name"
-              placeholder="Category name"
-              class="border p-2 rounded"
-              required
+              id="description"
+              name="description"
+              placeholder="Task description"
+              class="border p-2 w-full rounded"
+            />
+          </div>
+          <div>
+            <label for="category" class="form-label"> Category </label>
+            <select
+              id="category"
+              name="category_id"
+              class="border p-2 w-full rounded"
+            >
+              <option value="">Select Category</option>
+              {% for category in categories %}
+              <option value="{{ category.id }}">{{ category.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label for="due_date" class="form-label"> Due Date </label>
+            <input
+              type="date"
+              id="due_date"
+              name="due_date"
+              class="border p-[7px] w-full rounded"
             />
           </div>
           <div class="self-end">
             <button
               type="submit"
-              class="bg-green-500 text-white px-4 py-2 rounded"
+              class="bg-green-500 hover:bg-green-600 text-white px-4 py-[9px] rounded"
             >
-              Add Category
+              Add Task
             </button>
           </div>
-        </form>
-
-        <!-- Category List -->
-        <div>
-          <h3 class="text-lg font-medium mb-2">Existing Categories</h3>
-          <ul class="flex space-x-4 max-w-[500px] overflow-x-auto">
-            {% for category in categories %}
-            <li class="flex justify-between items-center bg-white p-2 rounded">
-              <span>{{ category.name }}</span>
-              <form
-                action="/categories/delete/{{ category.id }}"
-                method="POST"
-                class="ml-2"
-              >
-                <button type="submit" class="bg-red-500 text-white p-2 rounded">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0a2 2 0 012-2h4a2 2 0 012 2m-6 0h6"
-                    />
-                  </svg>
-                </button>
-              </form>
-            </li>
-            {% else %}
-            <li class="bg-white p-2 rounded">No categories found</li>
-            {% endfor %}
-          </ul>
         </div>
+      </form>
+    </div>
+
+    <!-- Search Form -->
+    <div>
+      <h2 class="text-2xl font-semibold mb-2">Search Tasks</h2>
+      <div>
+        <form action="/search" method="GET" class="mb-4">
+          <div>
+            <label for="query" class="form-label">Search tasks by title</label>
+            <input
+              type="text"
+              id="query"
+              name="query"
+              placeholder="Enter task title"
+              class="border p-2 rounded mr-3"
+            />
+            <button
+              type="submit"
+              class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded mr-3"
+            >
+              Search
+            </button>
+            <a
+              href="/"
+              class="border border-green-500 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+            >
+              Show All Tasks
+            </a>
+          </div>
+        </form>
       </div>
+    </div>
 
-      <!-- Task List -->
-      <div class="space-y-4">
-        <h1 class="text-2xl font-semibold text-center mb-4">Task List</h1>
-        {% for task in tasks %}
-        <div class="bg-neutral-100 p-4 rounded shadow-lg relative">
-          <form action="/update/{{ task.id }}" method="POST" class="space-y-4">
-            <h2 class="text-lg font-semibold text-center">
-              Task {{ task.id }}
-            </h2>
+    <!-- Manage Categories -->
+    <div class="flex flex-col items-start">
+      <h2 class="text-2xl font-semibold mb-2">Manage Categories</h2>
+      <form
+        action="/categories"
+        method="POST"
+        class="grid grid-cols-2 gap-4 mb-4"
+      >
+        <div>
+          <label for="category-name" class="form-label"> New Category </label>
+          <input
+            type="text"
+            id="category-name"
+            name="name"
+            placeholder="Category name"
+            class="border p-2 rounded"
+            required
+          />
+        </div>
+        <div class="self-end">
+          <button
+            type="submit"
+            class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+          >
+            Add Category
+          </button>
+        </div>
+      </form>
 
-            <!-- Task Title -->
-            <div>
-              <label
-                for="title-{{ task.id }}"
-                class="block text-sm font-medium text-gray-700"
-              >
-                Title
-              </label>
-              <input
-                type="text"
-                id="title-{{ task.id }}"
-                name="title-{{ task.id }}"
-                value="{{ task.title }}"
-                class="border w-full rounded text-lg font-bold p-1"
-                required
-              />
-            </div>
+      <!-- Category List -->
+      <div>
+        <h2 class="text-2xl font-semibold mb-2">Existing Categories</h2>
+        <ul class="flex space-x-4 max-w-[500px] overflow-x-auto">
+          {% for category in categories %}
+          <li class="flex justify-between items-center bg-white p-2 rounded">
+            <span>{{ category.name }}</span>
+            <form
+              action="/categories/delete/{{ category.id }}"
+              method="POST"
+              class="ml-2"
+            >
+              <button type="submit" class="bg-red-500 text-white p-2 rounded">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0a2 2 0 012-2h4a2 2 0 012 2m-6 0h6"
+                  />
+                </svg>
+              </button>
+            </form>
+          </li>
+          {% else %}
+          <li class="bg-white p-3 rounded">No categories found</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
 
-            <!-- Task Description -->
-            <div>
-              <label
-                for="description-{{ task.id }}"
-                class="block text-sm font-medium text-gray-700"
-              >
-                Description
-              </label>
-              <textarea
-                id="description-{{ task.id }}"
-                name="description-{{ task.id }}"
-                class="border p-2 w-full rounded"
-                rows="2"
-                required
-              >
+    <!-- Task List -->
+    <div class="space-y-4">
+      <h2 class="text-2xl font-semibold text-center mb-4">Task List</h2>
+      {% for task in tasks %}
+      <div class="bg-neutral-100 p-4 rounded shadow-lg relative">
+        <form action="/update/{{ task.id }}" method="POST" class="space-y-2">
+          <h3 class="text-lg font-semibold text-center">Task {{ task.id }}</h3>
+
+          <!-- Task Title -->
+          <div>
+            <label for="title-{{ task.id }}" class="form-label"> Title </label>
+            <input
+              type="text"
+              id="title-{{ task.id }}"
+              name="title-{{ task.id }}"
+              placeholder="Task title"
+              value="{{ task.title }}"
+              class="border w-full rounded text-lg font-bold p-2"
+              required
+            />
+          </div>
+
+          <!-- Task Description -->
+          <div>
+            <label for="description-{{ task.id }}" class="form-label">
+              Description
+            </label>
+            <textarea
+              id="description-{{ task.id }}"
+              name="description-{{ task.id }}"
+              placeholder="Task description"
+              class="border p-2 w-full rounded"
+              rows="2"
+              required
+            >
 {{ task.description }}</textarea
-              >
-            </div>
+            >
+          </div>
 
+          <div class="flex space-x-4">
             <!-- Task Due Date -->
             <div>
-              <label
-                for="due_date-{{ task.id }}"
-                class="block text-sm font-medium text-gray-700"
-              >
+              <label for="due_date-{{ task.id }}" class="form-label">
                 Due Date
               </label>
               <input
@@ -251,85 +226,82 @@
                 name="due_date-{{ task.id }}"
                 value="{{ task.due_date.strftime('%Y-%m-%d') if task.due_date else '' }}"
                 class="border p-2 rounded"
-                required
               />
             </div>
 
             <!-- Task Category -->
-            <div>
-              <label
-                for="category-{{ task.id }}"
-                class="block text-sm font-medium text-gray-700"
-              >
+            <div class="mb-4">
+              <label for="category-{{ task.id }}" class="form-label">
                 Category
               </label>
               <select
                 id="category-{{ task.id }}"
                 name="category_id"
-                class="border p-2 w-full rounded mb-6"
+                class="border p-[9px] rounded"
               >
                 <option value="">None</option>
                 {% for category in categories %}
-                <!-- <option
+                <option
                   value="{{ category.id }}"
                   {%
-                  if
-                  task.category
-                  and
-                  task.category.id == category.id
-                  %}
+                    if
+                    task.category
+                    and
+                    task.category.id == category.id
+                    %}
                   selected
                   {%
-                  endif
-                  %}
-                >
-                  {{ category.name }}
-                </option> -->
+                    endif
+                    %}
+                    >
+                    {{ category.name }}
+                  </option>
                 {% endfor %}
               </select>
-              <p>
-                Created: {{ task.created_at.strftime('%Y-%m-%d %H:%M:%S') }}
-              </p>
             </div>
+          </div>
 
-            <!-- Action Buttons -->
-            <div class="absolute right-[72px] bottom-[16px]">
-              <button
-                type="submit"
-                class="bg-blue-500 text-white px-4 py-2 rounded"
-              >
-                Update
-              </button>
-            </div>
-          </form>
+          <!-- Task Created Date -->
+          <p>Created: {{ task.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
 
-          <!-- Delete Button -->
-          <form action="/delete/{{ task.id }}" method="POST" class="mt-2">
+          <!-- Action Buttons -->
+          <div class="absolute right-[72px] bottom-[16px]">
             <button
               type="submit"
-              class="bg-red-500 text-white p-2 rounded absolute right-[16px] bottom-[16px]"
+              class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0a2 2 0 012-2h4a2 2 0 012 2m-6 0h6"
-                />
-              </svg>
+              Update
             </button>
-          </form>
-        </div>
-        {% else %}
-        <p class="text-center text-xl">No tasks found</p>
-        {% endfor %}
+          </div>
+        </form>
+
+        <!-- Delete Button -->
+        <form action="/delete/{{ task.id }}" method="POST" class="mt-2">
+          <button
+            type="submit"
+            class="bg-red-500 hover:bg-red-600 text-white p-2 rounded absolute right-[16px] bottom-[16px]"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6M9 7h6m-7 0a2 2 0 012-2h4a2 2 0 012 2m-6 0h6"
+              />
+            </svg>
+          </button>
+        </form>
       </div>
+      {% else %}
+      <p class="text-center text-xl">No tasks found</p>
+      {% endfor %}
     </div>
-  </body>
-</html>
+  </div>
+</main>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %} {% block content %}
+<main class="container mx-auto my-10 px-4 text-center">
+  <div class="bg-white p-6 rounded shadow">
+    <h1 class="text-3xl font-bold">Something went wrong :(</h1>
+    <p class="text-lg font-semibold text-red-500 my-4">{{ message }}</p>
+    <a href="/" class="text-blue-500 underline">Home Page</a>
+  </div>
+</main>
+{% endblock %}
