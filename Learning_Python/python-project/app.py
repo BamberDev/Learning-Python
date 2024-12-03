@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from models import db, Task, Category
 from flask_alembic import Alembic
 from datetime import datetime
@@ -6,6 +6,7 @@ from datetime import datetime
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///todo.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SECRET_KEY"] = "Task_Manager"
 
 db.init_app(app)
 alembic = Alembic()
@@ -35,14 +36,15 @@ def add_task():
     )
     db.session.add(new_task)
     db.session.commit()
+    flash("Task added successfully!", "success")
     return redirect(url_for("index"))
 
 
 @app.route("/update/<int:task_id>", methods=["POST"])
 def update_task(task_id):
-    task = Task.query.get(task_id)
+    task = db.session.get(Task, task_id)
     if not task:
-        return "Task not found", 404
+        return render_template("error.html", message="Task not found.")
 
     title_key = f"title-{task_id}"
     description_key = f"description-{task_id}"
@@ -51,13 +53,12 @@ def update_task(task_id):
 
     task.title = request.form.get(title_key)
     task.description = request.form.get(description_key)
-
     due_date = request.form.get(due_date_key)
     if due_date:
         try:
             task.due_date = datetime.strptime(due_date, "%Y-%m-%d")
         except ValueError:
-            return "Invalid date format.", 400
+            return render_template("error.html", message="Invalid due date format.")
     else:
         task.due_date = None
 
@@ -65,14 +66,17 @@ def update_task(task_id):
     task.category_id = int(category_id) if category_id else None
 
     db.session.commit()
+    flash(f"Task {task_id} updated successfully!", "info")
     return redirect(url_for("index"))
 
 
 @app.route("/delete/<int:task_id>", methods=["POST"])
 def delete_task(task_id):
     task = db.session.get(Task, task_id)
-    db.session.delete(task)
-    db.session.commit()
+    if task:
+        db.session.delete(task)
+        db.session.commit()
+    flash(f"Task {task_id} deleted successfully!", "error")
     return redirect(url_for("index"))
 
 
@@ -90,15 +94,13 @@ def add_category():
 def delete_category(category_id):
     category = db.session.get(Category, category_id)
     if category:
-        tasks = Task.query.filter_by(category_id=category_id).all()
-        for task in tasks:
-            task.category_id = None
+        Task.query.filter_by(category_id=category_id).update({"category_id": None})
         db.session.delete(category)
         db.session.commit()
     return redirect(url_for("index"))
 
 
-@app.route("/search")
+@app.route("/search", methods=["GET"])
 def search():
     query = request.args.get("query", "").strip()
     if query:
