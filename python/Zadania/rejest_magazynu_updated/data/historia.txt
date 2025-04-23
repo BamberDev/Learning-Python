@@ -1,0 +1,18 @@
+Wprowadzono: 15000 | Aktualne saldo: 15000
+Zakupiono 20 sztuk Pilka. Aktualne saldo: 14100
+Zakupiono 10 sztuk Buty sportowe. Aktualne saldo: 12600
+Zakupiono 15 sztuk Rekawice. Aktualne saldo: 11625
+Zakupiono 25 sztuk Skarpety. Aktualne saldo: 10750
+Sprzedano 5 sztuk Pilka. Aktualne saldo: 11050
+Sprzedano 10 sztuk Skarpety. Aktualne saldo: 11500
+Zakupiono 6 sztuk Koszulka pilkarska. Aktualne saldo: 10900
+Dodano: 2024-10-01 04:19:01.244266
+Wprowadzono: -500 | Aktualne saldo: 10400
+Zakupiono 10 sztuk Spodenki. Aktualne saldo: 9950
+Sprzedano 5 sztuk Pilka. Aktualne saldo: 10200
+Dodano: 2024-10-01 04:20:16.320263
+Wprowadzono: 500 | Aktualne saldo: 10700
+Dodano: 2024-10-04 00:49:01.107961
+Wprowadzono: 500 | Aktualne saldo: 11200
+Wprowadzono: 500 | Aktualne saldo: 11200
+Zakupiono 5 sztuk Rower. Aktualne saldo: 10600

@@ -1,0 +1,7 @@
+Rower,{'cena': 120, 'ilosc': 15}
+Pilka,{'cena': 45, 'ilosc': 10}
+Buty sportowe,{'cena': 150, 'ilosc': 10}
+Rekawice,{'cena': 65, 'ilosc': 15}
+Skarpety,{'cena': 35, 'ilosc': 15}
+Koszulka pilkarska,{'cena': 100, 'ilosc': 6}
+Spodenki,{'cena': 45, 'ilosc': 10}
